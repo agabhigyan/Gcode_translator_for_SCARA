@@ -12,7 +12,7 @@ float calTheta2(float x,float y, float l1, float l2)
 	float th2=acos(d1);
         th2=th2*57.3;
 return th2;
-}
+}//
 float calTheta1(float x,float y, float l1, float l2)
 {float d1=(x*x+y*y-l1*l1-l2*l2)/(2*l1*l2);
 	float th2=acos(d1);
