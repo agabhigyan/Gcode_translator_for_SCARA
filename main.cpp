@@ -1,4 +1,10 @@
 /*Fore translating the G-Codes the file format needs to be changed from ".g" or ".gcode" or ".gco" to ".txt". In the same directory where the main.cpp file is stored, there must be at least two more files - "settings.txt" and "targets.txt". Save the G-Code files in the same directory
+The file "settings.txt" contains the following parameters of the SCARA arm
+Upper_Arm_(L1)_(mm) ____
+Forearm_(L2)_(mm) _____
+Inner_Radius_limit_(mm) ____
+Quality_(mm) ____
+The file "targets.txt" lists the G-Code files needed to be translated
 Calibration:
 Upload cartesian firmware Sprinter/Marlin to your CNC machine. Connect your 
 */
@@ -64,10 +70,10 @@ int main()
          in >> x[i];
          i=i+1;
     	}
-        cout<<"Length of upper Arm (L1) in milimeter :"<<x[1]<<endl;
-        cout<<"Length of forearm (L2) in milimeter :"<<x[2]<<endl;
-        cout<<"Inner Radius limit in milimeter :"<< x[3]<<endl;
-        cout<<"Quality in milimeter :"<< x[4]<<endl;
+        cout<<"Length of upper Arm (L1) in milimeter :"<<x[0]<<endl;
+        cout<<"Length of forearm (L2) in milimeter :"<<x[1]<<endl;
+        cout<<"Inner Radius limit in milimeter :"<< x[2]<<endl;
+        cout<<"Quality in milimeter :"<< x[3]<<endl;
      	infile.close();
         ifstream infile2("targets.txt");
         
@@ -161,11 +167,11 @@ case 'E':  infile3>>e_value;
                 movement=sqrt((x_mid-x_value)*(x_mid-x_value)+(y_mid-y_value)*(y_mid-y_value));
                if(x_value!=0.0||y_value!=0.0)
                {
-               while(movement>x[4])
-               {  x_mid = x_mid + (x_value - x_mid)*x[4]/movement;
-                  y_mid = y_mid + (y_value - y_mid)*x[4]/movement;
-                  angl1=calTheta1(x_mid,y_mid, x[1],x[2]);
-                  angl2=calTheta2(x_mid,y_mid, x[1],x[2]);
+               while(movement>x[3])
+               {  x_mid = x_mid + (x_value - x_mid)*x[3]/movement;
+                  y_mid = y_mid + (y_value - y_mid)*x[3]/movement;
+                  angl1=calTheta1(x_mid,y_mid, x[0],x[1]);
+                  angl2=calTheta2(x_mid,y_mid, x[0],x[1]);
                   outfile<<"G0"<<" "<<"X"<<angl1<<" "<<"Y"<<angl2;
                   if(got_F==true) outfile<<" "<<"F"<<f_value;
                  outfile<<"\n";
@@ -181,10 +187,10 @@ case 'E':  infile3>>e_value;
                exit1:
                if(x_value!=0.0||y_value!=0.0)
                { 
- 	       if (sqrt(x_value*x_value+y_value*y_value)>(x[1]+x[2]))
+ 	       if (sqrt(x_value*x_value+y_value*y_value)>(x[0]+x[1]))
 	        {cout<<"\nPoint ("<<x_value<<","<<y_value<<") is going out of range."<<endl;goto exit3;}
-	       x_value_new=calTheta1(x_value,y_value, x[1],x[2]);
-               y_value_new=calTheta2(x_value,y_value, x[1],x[2]);
+	       x_value_new=calTheta1(x_value,y_value, x[0],x[1]);
+               y_value_new=calTheta2(x_value,y_value, x[0],x[1]);
                 outfile<<"G0"<<" "<<"X"<<x_value_new<<" "<<"Y"<<y_value_new;
                 if(got_E==true) outfile<<" "<<"E"<<e_value;
 		if(got_F==true) outfile<<" "<<"F"<<f_value;
