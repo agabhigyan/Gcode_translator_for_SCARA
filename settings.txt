@@ -1,6 +1,5 @@
-Machine Name:MPSCARA_V1;
-Upper_Arm_(L1)_[mm] 96.45
-Forearm_(L2)_[mm] 92.12
-Inner_Radius_limit_[mm] 46.65
-Quality_[mm] 4
+Upper_Arm_(L1)_(mm) 96.45
+Forearm_(L2)_(mm) 92.12
+Inner_Radius_limit_(mm) 10.10
+Quality_(mm) 4
 
