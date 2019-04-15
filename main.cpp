@@ -37,8 +37,7 @@ int main()
         float x_mid=0.0;float y_mid=0.0;
         float x_value_new=0.0;float y_value_new=0.0;float z_value_new=0.0; 
 	char ch;int gcde=0;
-        bool got_values=false;
-	bool got_E=false;
+        bool got_E=false;
         bool got_F=false;
         bool got_only_z=false;
         bool check_quality=false;
@@ -46,7 +45,7 @@ int main()
     	float movement=0.0;   
         float angl1;float angl2; 
 	char buffer[80];  
-        char data[80];char files[80];string str1="square.txt";
+        char data[80];char files[80];
         string str[10];//name of the files will be stored
         string strNew[10];
         string mod="modified_for_scara_";
@@ -89,7 +88,6 @@ int main()
         x_mid=0.0;y_mid=0.0;
         x_value_new=0.0;y_value_new=0.0;z_value_new=0.0; 
 	gcde=0;
-        got_values=false;
         got_E=false;
         got_F=false;
 	got_G_M=true;
@@ -109,7 +107,7 @@ int main()
         {infile3>>ch;
          exit2: if(infile3.eof()!=false) break;
          if(ch=='G')
-          {infile3>>gcde;got_only_z=false;got_values=false;got_F=false;
+          {infile3>>gcde;got_only_z=false;got_F=false;
             if(gcde==0)
               {
                 infile3>>ch;
@@ -119,8 +117,8 @@ case 'X':  infile3>>x_value;//reads x value
            infile3>>ch;
            switch(ch)      		
            {   
-           case 'Y': infile3>>y_value; got_values=true;
- 		        infile3>>ch;
+           case 'Y': infile3>>y_value;
+ 		     infile3>>ch;
 		   switch(ch)
                    {                	
                    case 'Z':infile3>>z_value;
@@ -134,11 +132,15 @@ case 'X':  infile3>>x_value;//reads x value
                             break;
                     }
                         break;
-           case 'Z':cout<<"lala:";
+           case 'Z':infile3>>z_value;
+                     break;
+	   case 'E':infile3>>e_value;
+                     got_E=true;
 		    break;
-	   case 'E':cout<<"lala:";
+	   case 'F':infile3>>f_value;
+                     got_F=true;
 		    break;
-           case 'G':cout<<"lala:";
+           case 'G':got_G_M=true;
 		    break;
            }
 	   break;                                                
@@ -153,11 +155,11 @@ case 'E':  infile3>>e_value;
 }
 //end of switch statement
 } //done reading G0 code
-                 if(got_values==true)            
+                 if(x_value!=0.0||y_value!=0.0)           
                 {if(check_quality==false)
                 {x_mid=x_value;y_mid=y_value;check_quality=true;goto exit1;}}
                 movement=sqrt((x_mid-x_value)*(x_mid-x_value)+(y_mid-y_value)*(y_mid-y_value));
-               if(got_values==true)
+               if(x_value!=0.0||y_value!=0.0)
                {
                while(movement>x[4])
                {  x_mid = x_mid + (x_value - x_mid)*x[4]/movement;
@@ -177,7 +179,7 @@ case 'E':  infile3>>e_value;
                               else {if (ch=='Z') outfile<<"G28 Z\n";else {outfile<<"G28\n";if(ch !='X'||ch !='Y'||ch !='Z')     goto exit2;}}}
                } //////////////////////G28
                exit1:
-               if(got_values==true)
+               if(x_value!=0.0||y_value!=0.0)
                { 
  	       if (sqrt(x_value*x_value+y_value*y_value)>(x[1]+x[2]))
 	        {cout<<"\nPoint ("<<x_value<<","<<y_value<<") is going out of range."<<endl;goto exit3;}
