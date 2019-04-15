@@ -33,14 +33,16 @@ using namespace std;
 int main()
 {       float x[10]; 
 	char ch_x;char ch_y;char ch_z; char ch_f;char g28;
-        float x_value=0.0;float y_value=0.0;float z_value=0.0; float f_value=0.0; 
+        float x_value=0.0;float y_value=0.0;float z_value=0.0; float e_value=0.0; float f_value=0.0; 
         float x_mid=0.0;float y_mid=0.0;
         float x_value_new=0.0;float y_value_new=0.0;float z_value_new=0.0; 
 	char ch;int gcde=0;
         bool got_values=false;
+	bool got_E=false;
         bool got_F=false;
         bool got_only_z=false;
         bool check_quality=false;
+        bool got_G_M=false;
     	float movement=0.0;   
         float angl1;float angl2; 
 	char buffer[80];  
@@ -83,12 +85,14 @@ int main()
          cout<<"\nNumber of Gcode files to be processed :"<<NUMofFiles<<endl;
 	for(int k=1;k<=NUMofFiles;k++) /////////starting of for loop
        { 
-	x_value=0.0;y_value=0.0;z_value=0.0;f_value=0.0; 
+	x_value=0.0;y_value=0.0;z_value=0.0;e_value=0.0;f_value=0.0;
         x_mid=0.0;y_mid=0.0;
         x_value_new=0.0;y_value_new=0.0;z_value_new=0.0; 
 	gcde=0;
         got_values=false;
+        got_E=false;
         got_F=false;
+	got_G_M=true;
         got_only_z=false;
         check_quality=false;
     	movement=0.0;   
@@ -108,25 +112,51 @@ int main()
           {infile3>>gcde;got_only_z=false;got_values=false;got_F=false;
             if(gcde==0)
               {
-                infile3>>ch_x;
-                if(ch_x=='X')  {infile3>>x_value;//reads x value
-                               infile3>>ch_y;
-                 		if(ch_y=='Y')  {infile3>>y_value; got_values=true;
-                 		 infile3>>ch_z;
-                		if(ch_z=='Z')  {infile3>>z_value;}
-				if(ch_z=='F')  {infile3>>f_value; got_F=true;}
-                                                        }}  
-		 if(ch_x=='Y')  {infile3>>y_value;
-                 		 infile3>>ch_z;
-                		 if(ch_y=='Z')  {infile3>>y_value;} }
-                 if(ch_x=='Z')  {infile3>>z_value;got_only_z=true;}
-                
-               } //done reading x,y and z values...........G0 code
+                infile3>>ch;
+switch(ch)
+{ 
+case 'X':  infile3>>x_value;//reads x value
+           infile3>>ch;
+           switch(ch)      		
+           {   
+           case 'Y': infile3>>y_value; got_values=true;
+ 		        infile3>>ch;
+		   switch(ch)
+                   {                	
+                   case 'Z':infile3>>z_value;
+                            break;
+                   case 'E':infile3>>e_value;
+                            got_E=true;
+                            break;
+	   	   case 'F':infile3>>f_value; got_F=true;
+                            break;
+                   case 'G':got_G_M=true;
+                            break;
+                    }
+                        break;
+           case 'Z':cout<<"lala:";
+		    break;
+	   case 'E':cout<<"lala:";
+		    break;
+           case 'G':cout<<"lala:";
+		    break;
+           }
+	   break;                                                
+case 'Y':  infile3>>y_value;
+           infile3>>ch;
+           if(ch=='Z')  {infile3>>y_value;} 
+         break;
+case 'Z':  infile3>>z_value;got_only_z=true;
+         break;    
+case 'E':  infile3>>e_value;
+         break;       
+}
+//end of switch statement
+} //done reading G0 code
                  if(got_values==true)            
                 {if(check_quality==false)
                 {x_mid=x_value;y_mid=y_value;check_quality=true;goto exit1;}}
                 movement=sqrt((x_mid-x_value)*(x_mid-x_value)+(y_mid-y_value)*(y_mid-y_value));
-                            //int n=0;
                if(got_values==true)
                {
                while(movement>x[4])
@@ -138,8 +168,7 @@ int main()
                   if(got_F==true) outfile<<" "<<"F"<<f_value;
                  outfile<<"\n";
                 movement=sqrt((x_mid-x_value)*(x_mid-x_value)+(y_mid-y_value)*(y_mid-y_value));
-                
-               }}//end of quality point generation
+             }}//end of quality point generation
                 
               if(gcde==28) 
                {infile3>>ch;
@@ -155,16 +184,15 @@ int main()
 	       x_value_new=calTheta1(x_value,y_value, x[1],x[2]);
                y_value_new=calTheta2(x_value,y_value, x[1],x[2]);
                 outfile<<"G0"<<" "<<"X"<<x_value_new<<" "<<"Y"<<y_value_new;
-                if(got_F==true) outfile<<" "<<"F"<<f_value;
+                if(got_E==true) outfile<<" "<<"E"<<e_value;
+		if(got_F==true) outfile<<" "<<"F"<<f_value;
                  outfile<<" ;original point\n";
                }
              exit3:
              if(got_only_z==true)outfile<<"G0"<<" "<<"Z"<<z_value<<endl;
+             if(got_G_M==true) goto exit2;
           }//end of reading G-value
          }//end of while
           }//end of for loop
-
-       
-     	
-	return 0;
+return 0;
 }
