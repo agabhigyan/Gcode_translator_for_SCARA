@@ -24,7 +24,17 @@ float calTheta1(float x,float y, float l1, float l2)
 using namespace std;
 int main()
 {       float x[10]; 
-	
+	char ch_x;char ch_y;char ch_z; char ch_f;char g28;
+        float x_value=0.0;float y_value=0.0;float z_value=0.0; float f_value=0.0; 
+        float x_mid=0.0;float y_mid=0.0;
+        float x_value_new=0.0;float y_value_new=0.0;float z_value_new=0.0; 
+	char ch;int gcde=0;
+        bool got_values=false;
+        bool got_F=false;
+        bool got_only_z=false;
+        bool check_quality=false;
+    	float movement=0.0;   
+        float angl1;float angl2; 
 	char buffer[80];  
         char data[80];char files[80];string str1="square.txt";
         string str[10];//name of the files will be stored
@@ -65,18 +75,16 @@ int main()
          cout<<"\nNumber of Gcode files to be processed :"<<NUMofFiles<<endl;
 	for(int k=1;k<=NUMofFiles;k++) /////////starting of for loop
        { 
-	char ch_x;char ch_y;char ch_z; char ch_f;char g28;
-        float x_value=0.0;float y_value=0.0;float z_value=0.0; float f_value=0.0; 
-        float x_mid=0.0;float y_mid=0.0;
-        float x_value_new=0.0;float y_value_new=0.0;float z_value_new=0.0; 
-	char ch;int gcde=0;
-        bool got_values=false;
-        bool got_F=false;
-        bool got_only_z=false;
-        bool check_quality=false;
-    	float movement=0.0;   
-        float angl1;float angl2; 
-   	ifstream infile3(str[k].c_str()); //reads the file str1 for G-Code
+	x_value=0.0;y_value=0.0;z_value=0.0;f_value=0.0; 
+        x_mid=0.0;y_mid=0.0;
+        x_value_new=0.0;y_value_new=0.0;z_value_new=0.0; 
+	gcde=0;
+        got_values=false;
+        got_F=false;
+        got_only_z=false;
+        check_quality=false;
+    	movement=0.0;   
+         	ifstream infile3(str[k].c_str()); //reads the file str1 for G-Code
         if (! infile3)
 	{ cout<<"\n The target files do not exist"<<endl;
 	exit(1);
