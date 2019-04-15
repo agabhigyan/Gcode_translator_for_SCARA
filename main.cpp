@@ -4,15 +4,12 @@
 #include<stdlib.h>
 #include<string>
 #include <sstream>
-#include <ctype.h>
-#include <stdio.h>
-#include<sstream>
 float calTheta2(float x,float y, float l1, float l2)
 {float d1=(x*x+y*y-l1*l1-l2*l2)/(2*l1*l2);
 	float th2=acos(d1);
         th2=th2*57.3;
 return th2;
-}//
+}
 float calTheta1(float x,float y, float l1, float l2)
 {float d1=(x*x+y*y-l1*l1-l2*l2)/(2*l1*l2);
 	float th2=acos(d1);
@@ -79,10 +76,7 @@ int main()
         bool check_quality=false;
     	float movement=0.0;   
         float angl1;float angl2; 
-
-       
-
-	ifstream infile3(str[k].c_str()); //reads the file str1 for G-Code
+   	ifstream infile3(str[k].c_str()); //reads the file str1 for G-Code
         if (! infile3)
 	{ cout<<"\n The target files do not exist"<<endl;
 	exit(1);
@@ -139,13 +133,16 @@ int main()
                } //////////////////////G28
                exit1:
                if(got_values==true)
-               {
+               { 
+ 	       if (sqrt(x_value*x_value+y_value*y_value)>(x[1]+x[2]))
+	        {cout<<"\nPoint ("<<x_value<<","<<y_value<<") is going out of range."<<endl;goto exit3;}
 	       x_value_new=calTheta1(x_value,y_value, x[1],x[2]);
                y_value_new=calTheta2(x_value,y_value, x[1],x[2]);
                 outfile<<"G0"<<" "<<"X"<<x_value_new<<" "<<"Y"<<y_value_new;
                 if(got_F==true) outfile<<" "<<"F"<<f_value;
                  outfile<<" ;original point\n";
                }
+             exit3:
              if(got_only_z==true)outfile<<"G0"<<" "<<"Z"<<z_value<<endl;
           }//end of reading G-value
          }//end of while
