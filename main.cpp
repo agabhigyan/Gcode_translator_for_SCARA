@@ -43,6 +43,7 @@ int main()
         float x_mid=0.0;float y_mid=0.0;
         float x_value_new=0.0;float y_value_new=0.0;float z_value_new=0.0; 
 	char ch;int gcde=0;
+        bool got_Z=false;
         bool got_E=false;
         bool got_F=false;
         bool got_only_z=false;
@@ -94,6 +95,7 @@ int main()
         x_mid=0.0;y_mid=0.0;
         x_value_new=0.0;y_value_new=0.0;z_value_new=0.0; 
 	gcde=0;
+        got_Z=false;
         got_E=false;
         got_F=false;
 	got_G_M=true;
@@ -114,7 +116,7 @@ int main()
          exit2: if(infile3.eof()!=false) break;
          if(ch=='G')
           {infile3>>gcde;got_only_z=false;got_F=false;
-            if(gcde==0)
+         if(gcde==0||gcde==00||gcde==01||gcde==1)
               {
                 infile3>>ch;
 switch(ch)
@@ -123,14 +125,39 @@ case 'X':  infile3>>x_value;//reads x value
            infile3>>ch;
            switch(ch)      		
            {   
-           case 'Y': infile3>>y_value;
- 		     infile3>>ch;
+           case 'Y':infile3>>y_value;
+ 		    infile3>>ch;
 		   switch(ch)
                    {                	
                    case 'Z':infile3>>z_value;
+			    infile3>>ch;
+			    if(ch=='G')
+                              got_G_M=true;
+			    if(ch=='E'){
+			      infile3>>e_value;
+                              got_E=true;
+                              infile3>>ch;
+			      if(ch=='F')
+                                 {
+                                 infile3>>f_value;
+				 got_F=true;}
+                              if(ch=='G')
+                                 got_G_M=true;
+                                       }
+                            if(ch=='F')
+                               infile3>>f_value;
+                               got_F=true;
+                               
                             break;
                    case 'E':infile3>>e_value;
                             got_E=true;
+                            infile3>>ch;
+			      if(ch=='F')
+                                 {
+                                 infile3>>f_value;
+				 got_F=true;}
+                              if(ch=='G')
+                                 got_G_M=true;
                             break;
 	   	   case 'F':infile3>>f_value; got_F=true;
                             break;
@@ -151,12 +178,74 @@ case 'X':  infile3>>x_value;//reads x value
            }
 	   break;                                                
 case 'Y':  infile3>>y_value;
-           infile3>>ch;
-           if(ch=='Z')  {infile3>>y_value;} 
+ 		    infile3>>ch;
+		   switch(ch)
+                   {                	
+                   case 'Z':infile3>>z_value;
+			    infile3>>ch;
+			    if(ch=='G')
+                              got_G_M=true;
+			    if(ch=='E'){
+			      infile3>>e_value;
+                              got_E=true;
+                              infile3>>ch;
+			      if(ch=='F')
+                                 {
+                                 infile3>>f_value;
+				 got_F=true;}
+                              if(ch=='G')
+                                 got_G_M=true;
+                                       }
+                            if(ch=='F')
+                               infile3>>f_value;
+                               got_F=true;
+                               
+                            break;
+                   case 'E':infile3>>e_value;
+                            got_E=true;
+                            infile3>>ch;
+			      if(ch=='F')
+                                 {
+                                 infile3>>f_value;
+				 got_F=true;}
+                              if(ch=='G')
+                                 got_G_M=true;
+                            break;
+	   	   case 'F':infile3>>f_value; got_F=true;
+                            break;
+                   case 'G':got_G_M=true;
+                            break;
+                    }
          break;
-case 'Z':  infile3>>z_value;got_only_z=true;
+case 'Z':  infile3>>z_value;
+           got_only_z=true;
+           infile3>>ch;
+	   if(ch=='G')
+           got_G_M=true;
+	   if(ch=='E'){
+	      infile3>>e_value;
+              got_E=true;
+              infile3>>ch;
+	      if(ch=='F')
+                {
+                infile3>>f_value;
+	        got_F=true;}
+              if(ch=='G')
+                got_G_M=true;
+                       }
+            if(ch=='F')
+               infile3>>f_value;
+               got_F=true;
          break;    
 case 'E':  infile3>>e_value;
+           got_E=true;
+           infile3>>ch;
+	   if(ch=='F')
+             {
+             infile3>>f_value;
+	     got_F=true;}
+             if(ch=='G')
+               got_G_M=true;
          break;       
 }
 //end of switch statement
