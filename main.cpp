@@ -43,6 +43,8 @@ int main()
         float x_mid=0.0;float y_mid=0.0;
         float x_value_new=0.0;float y_value_new=0.0;float z_value_new=0.0; 
 	char ch;int gcde=0;int mcde=0;
+        char ch_s;float s_value=0.0;
+        string comment;
         bool got_Z=false;
         bool got_E=false;
         bool got_F=false;
@@ -91,7 +93,8 @@ int main()
          cout<<str[i]<<"\t";
          cout<<"\nNumber of Gcode files to be processed :"<<NUMofFiles<<endl;
 	for(int k=1;k<=NUMofFiles;k++) /////////starting of for loop
-       { 
+       {
+	 
 	x_value=0.0;y_value=0.0;z_value=0.0;e_value=0.0;f_value=0.0;
         x_mid=0.0;y_mid=0.0;
         x_value_new=0.0;y_value_new=0.0;z_value_new=0.0; 
@@ -118,10 +121,10 @@ int main()
          exit2: if(infile3.eof()!=false) break;
          if(ch=='G')
           {infile3>>gcde;
-got_only_Z=false;got_F=false;got_only_E=false;
-         if(gcde==0||gcde==00||gcde==01||gcde==1)
+          got_only_Z=false;got_F=false;got_only_E=false;got_E=false;
+if(gcde==0||gcde==00||gcde==01||gcde==1)
               {
-                infile3>>ch;
+              infile3>>ch;
 switch(ch)
 { 
 case 'X':  infile3>>x_value;//reads x value
@@ -164,7 +167,7 @@ case 'X':  infile3>>x_value;//reads x value
                             break;
 	   	   case 'F':infile3>>f_value; got_F=true;
                             break;
-                   case 'G':got_G_M=true;
+	           case 'G':got_G_M=true;
                             break;
                     }
                         break;
@@ -222,7 +225,11 @@ case 'Y':  infile3>>y_value;
          break;
 case 'Z':  infile3>>z_value;
            got_only_Z=true;
-           outfile<<"G0"<<" "<<"Z"<<z_value;
+           if(gcde==01||gcde==1)
+                                 outfile<<"G1";
+           if(gcde==00||gcde==0)
+                                 outfile<<"G0";
+           outfile<<" Z"<<z_value;
            infile3>>ch;
 	   if(ch=='G')
               got_G_M=true;
@@ -247,7 +254,11 @@ case 'Z':  infile3>>z_value;
            break;    
 case 'E':  infile3>>e_value;
            got_only_E=true;
-           outfile<<"G0 E"<<e_value;
+           if(gcde==01||gcde==1)
+                                 outfile<<"G1";
+          if(gcde==00||gcde==0)
+                                 outfile<<"G0";
+           outfile<<" E"<<e_value;
            infile3>>ch;
 	   if(ch=='F')
              {
@@ -319,7 +330,11 @@ case 'F':infile3>>f_value;
                break;
        case 'Z':  infile3>>z_value;
                   got_only_Z=true;
-                  outfile<<"G0"<<" F"<<f_value<<" Z"<<z_value;
+                  if(gcde==01||gcde==1)
+                                 outfile<<"G1";
+                  if(gcde==00||gcde==0)
+                                 outfile<<"G0";
+                  outfile<<" F"<<f_value<<" Z"<<z_value;
                   infile3>>ch;
 	   if(ch=='G')
               got_G_M=true;
@@ -333,11 +348,11 @@ case 'F':infile3>>f_value;
          }      
 }
 //end of switch statement
-} //done reading G0/G01/G00/G1 code
+
                  if(x_value!=0.0||y_value!=0.0)           
                 {if(check_quality==false)
                 {x_mid=x_value;y_mid=y_value;check_quality=true;goto exit1;}}
-                movement=sqrt((x_mid-x_value)*(x_mid-x_value)+(y_mid-y_value)*(y_mid-y_value));
+               movement=sqrt(pow((x_mid-x_value),2)+pow((y_mid-y_value),2));
                if(x_value!=0.0||y_value!=0.0)
                {
                while(movement>x[3])
@@ -345,42 +360,159 @@ case 'F':infile3>>f_value;
                   y_mid = y_mid + (y_value - y_mid)*x[3]/movement;
                   angl1=calTheta1(x_mid,y_mid, x[0],x[1]);
                   angl2=calTheta2(x_mid,y_mid, x[0],x[1]);
-                  outfile<<"G0"<<" "<<"X"<<angl1<<" "<<"Y"<<angl2;
+                  if(gcde==01||gcde==1)
+                                 outfile<<"G1";
+                  if(gcde==00||gcde==0)
+                                 outfile<<"G0";
+                  outfile<<" X"<<angl1<<" "<<"Y"<<angl2;
                   if(got_F==true) outfile<<" "<<"F"<<f_value;
                  outfile<<"\n";
-                movement=sqrt((x_mid-x_value)*(x_mid-x_value)+(y_mid-y_value)*(y_mid-y_value));
+                movement=sqrt(pow((x_mid-x_value),2)+pow((y_mid-y_value),2));
              }}//end of quality point generation
                 x_mid=x_value;y_mid=y_value;
-              if(gcde==28) 
-               {infile3>>ch;
-               if(ch=='X') outfile<<"G28 X\n";
-                           else {if (ch=='Y') outfile<<"G28 Y\n";
-                              else {if (ch=='Z') outfile<<"G28 Z\n";else {outfile<<"G28\n";if(ch !='X'||ch !='Y'||ch !='Z')     goto exit2;}}}
-               } //////////////////////G28
+             
                exit1:
                if(x_value!=0.0 && y_value!=0.0 && got_only_Z==false&&got_only_E==false)
                { 
  	       if (sqrt(x_value*x_value+y_value*y_value)>(x[0]+x[1]))
-	        {cout<<"\nPoint ("<<x_value<<","<<y_value<<") is going out of range."<<endl;goto exit3;}
+	        {cout<<"\nPoint ("<<x_value<<","<<y_value<<") is going out of range."<<endl;
+                 goto exit3;}
 	       x_value_new=calTheta1(x_value,y_value, x[0],x[1]);
                y_value_new=calTheta2(x_value,y_value, x[0],x[1]);
-                outfile<<"G0"<<" "<<"X"<<x_value_new<<" "<<"Y"<<y_value_new;
+	       if(gcde==01||gcde==1)
+                                 outfile<<"G1";
+               if(gcde==00||gcde==0)
+                                 outfile<<"G0";
+                outfile<<" X"<<x_value_new<<" "<<"Y"<<y_value_new;
                 if(got_E==true) outfile<<" "<<"E"<<e_value;
 		if(got_F==true) outfile<<" "<<"F"<<f_value;
                  outfile<<" ;original point\n";
                }
-             exit3:
+              exit3:
               if(got_G_M==true) goto exit2;
-          }
+} //end of if(gcde==0||gcde==00||gcde==01||gcde==1)
+if(gcde==28) 
+               {infile3>>ch;
+               if(ch=='X') outfile<<"G28 X\n";
+                           else {if (ch=='Y') outfile<<"G28 Y\n";
+                              else {if (ch=='Z') outfile<<"G28 Z\n";else {outfile<<"G28\n";if(ch !='X'||ch !='Y'||ch !='Z')     goto exit2;}}}
+               } //////////////////////G28        
+
+if(gcde==90)  outfile<<"G90 ;use absolute coordinate"<<endl;
+if(gcde==21)  outfile<<"G21 ; set units to millimeters"<<endl;
+if(gcde==92) 
+           {infile3>>ch;
+switch(ch)
+{ 
+case 'X':  infile3>>x_value;//reads x value
+           infile3>>ch;
+           switch(ch)      		
+           {   
+           case 'Y':infile3>>y_value;
+ 		    infile3>>ch;
+		   switch(ch)
+                   {                	
+                   case 'Z':infile3>>z_value;
+			    infile3>>ch;
+			    if(ch=='G')
+                              got_G_M=true;
+			    if(ch=='E'){
+			      infile3>>e_value;
+                              got_E=true;
+                                        }
+                            break;
+                   case 'E':infile3>>e_value;
+                            got_E=true;
+                            break;
+	           case 'G':got_G_M=true;
+                            break;
+                    }
+                        break;
+           case 'Z':infile3>>z_value;
+                     break;
+	   case 'E':infile3>>e_value;
+                     got_E=true;
+		    break;
+           case 'G':got_G_M=true;
+		    break;
+           }
+	   break;                                                
+case 'Y':  infile3>>y_value;
+ 		    infile3>>ch;
+		   switch(ch)
+                   {                	
+                   case 'Z':infile3>>z_value;
+			    infile3>>ch;
+			    if(ch=='G')
+                              got_G_M=true;
+			    if(ch=='E'){
+			      infile3>>e_value;
+                              got_E=true;
+                                        }
+                            break;
+                   case 'E':infile3>>e_value;
+                            got_E=true;
+                            break;
+                   case 'G':got_G_M=true;
+                            break;
+                    }
+         break;
+case 'Z':  infile3>>z_value;
+           got_only_Z=true;
+           infile3>>ch;
+	   if(ch=='G')
+              got_G_M=true;
+	   if(ch=='E')
+	      infile3>>e_value;
+           break;    
+case 'E':  infile3>>e_value;
+           got_only_E=true;
+           break; 
+}
+//end of switch statemen
+}
+//end of if(gcde==92)
+}
 //end of reading and writing G-codes
 if(ch=='M')
           {infile3>>mcde;
-          if(mcde==107)
-             outfile<<"M107"<<endl;
-          if(mcde==82)
-             outfile<<"M82 ; use absolute distances for extrusion"<<endl;
-          }
+switch(mcde)
+{
+	case 82 :outfile<<"M82 ; use absolute distances for extrusion"<<endl;
+		 break;
+	case 104:infile3>>ch_s;
+                 infile3>>s_value;
+                 outfile<<"M104 S"<<s_value;
+                 outfile<<" ;set temperature"<<endl;
+                 break;
+	case 106:infile3>>ch_s;
+                 infile3>>s_value;
+                 outfile<<"M106 S"<<s_value<<endl;
+                 break;
+	case 107:outfile<<"M107"<<endl;
+		 break;
+	case 109:infile3>>ch_s;
+                 infile3>>s_value;
+                 outfile<<"M109 S"<<s_value<<endl;
+                 break;
+	case 140:infile3>>ch_s;
+                 infile3>>s_value;
+                 outfile<<"M140 S"<<s_value<<endl;
+                 break;
+	case 190:infile3>>ch_s;
+                 infile3>>s_value;
+                 outfile<<"M190 S"<<s_value;
+		 outfile<<" ;wait for bed temperature to be reached"<<endl;
+                 break;
+	
+	
+}//end of switch(mcde) 
+           }
 //End of reading M
+if(ch==';')
+         {infile3>>comment;
+          outfile<<";"<<comment<<endl;
+         }
          }//end of while
           }//end of for loop
 return 0;
