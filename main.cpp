@@ -45,6 +45,8 @@ int main()
 	char ch;int gcde=0;int mcde=0;
         char ch_s;float s_value=0.0;
         string comment;
+        bool got_X=false;
+        bool got_Y=false;
         bool got_Z=false;
         bool got_E=false;
         bool got_F=false;
@@ -99,6 +101,8 @@ int main()
         x_mid=0.0;y_mid=0.0;
         x_value_new=0.0;y_value_new=0.0;z_value_new=0.0; 
 	gcde=0;mcde=0;
+	got_X=false;
+        got_Y=false;        
         got_Z=false;
         got_E=false;
         got_F=false;
@@ -118,7 +122,8 @@ int main()
        	ofstream outfile(str[k].c_str()); //writing G-code to a new file
         while(!infile3.eof())
         {infile3>>ch;
-         exit2: if(infile3.eof()!=false) break;
+         exit2:got_G_M==false;
+          if(infile3.eof()!=false) break;
          if(ch=='G')
           {infile3>>gcde;
           got_only_Z=false;got_F=false;got_only_E=false;got_E=false;
@@ -405,14 +410,17 @@ if(gcde==92)
 switch(ch)
 { 
 case 'X':  infile3>>x_value;//reads x value
+           got_X=true;
            infile3>>ch;
            switch(ch)      		
            {   
            case 'Y':infile3>>y_value;
+                    got_Y=true;
  		    infile3>>ch;
 		   switch(ch)
                    {                	
                    case 'Z':infile3>>z_value;
+                            got_Z=true;
 			    infile3>>ch;
 			    if(ch=='G')
                               got_G_M=true;
@@ -438,10 +446,12 @@ case 'X':  infile3>>x_value;//reads x value
            }
 	   break;                                                
 case 'Y':  infile3>>y_value;
+		    got_Y=true;
  		    infile3>>ch;
 		   switch(ch)
                    {                	
                    case 'Z':infile3>>z_value;
+                            got_Z=true;
 			    infile3>>ch;
 			    if(ch=='G')
                               got_G_M=true;
@@ -458,19 +468,32 @@ case 'Y':  infile3>>y_value;
                     }
          break;
 case 'Z':  infile3>>z_value;
-           got_only_Z=true;
+           got_Z=true;
            infile3>>ch;
 	   if(ch=='G')
               got_G_M=true;
 	   if(ch=='E')
-	      infile3>>e_value;
+	      {infile3>>e_value;got_E=true;}
            break;    
 case 'E':  infile3>>e_value;
-           got_only_E=true;
-           break; 
+           got_E=true;
+           break;
+case 'G':  got_G_M=true;
+           break;  
 }
 //end of switch statemen
 }
+outfile<<"G92";
+if(got_X==true)
+          outfile<<" X"<<x_value;
+if(got_Y==true)
+	  outfile<<" Y"<<y_value;
+if(got_Z==true)
+          outfile<<" Z"<<z_value;
+if(got_E==true)
+           outfile<<" E"<<e_value;
+outfile<<"\n";
+if(got_G_M==true) goto exit2;
 //end of if(gcde==92)
 }
 //end of reading and writing G-codes
