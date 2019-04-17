@@ -4,10 +4,10 @@ Fore translating the G-Codes the file format needs to be changed from ".g" or ".
 The file "settings.txt" contains the following parameters of the SCARA arm
 Upper_Arm_(L1)_(mm) ____
 Forearm_(L2)_(mm) _____
-Inner_Radius_limit_(mm) ____
-Quality_(mm) ____
+Inner_Radius_limit_(mm) ____\\
+Quality_(mm) ____\\
 
-The file "targets.txt" lists the G-Code files needed to be translated
+The file "targets.txt" lists the G-Code files needed to be translated\\
 
 Hardware:
 Upload the cartesian firmware Sprinter/Marlin to your CNC machine. Connect the motor controlling the movement of the lower arm, that is, controlling the angle theta1, angle made by the lower arm with respect to the x-axis; to the X-motor port of your 3D printing shield.Connect the motor controlling the movement of the forearm, that is, controlling the angle theta2, angle made by the forearm with respect to the lower arm; to the Y-motor port of your 3D printing shield. Connect the motor controlling the movement of the platform in the z-direction to the Z-motor port of your 3D printing shield. Connect the corresponding minimum limit switches as well.
