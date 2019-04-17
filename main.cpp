@@ -27,7 +27,7 @@ float calTheta2(float x,float y, float l1, float l2)
         th2=th2*57.3;
 return th2;
 }
-/*The function calculates the angle Theta2 (in degree), that is the angle made by the forearm with respect to the lower arm in the counter-clockwise direction. 
+/* The function calculates the angle Theta2 (in degree), that is the angle made by the forearm with respect to the lower arm in the counter-clockwise direction. 
 Angular movement of the forearm will be controlled by a motor attached to Y- motor of a cartesian CNC machine */
 float calTheta1(float x,float y, float l1, float l2)
 {	float d1=(x*x+y*y-l1*l1-l2*l2)/(2*l1*l2);
